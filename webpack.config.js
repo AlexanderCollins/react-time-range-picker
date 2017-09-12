@@ -1,41 +1,28 @@
-/* jshint node: true */
 var path = require('path');
-
-
 module.exports = {
-  context: path.join(__dirname),
-  entry: './lib/index.js',
-
+  entry: './src/index.js',
   output: {
-    path: path.join(__dirname),
-    filename: 'react-time-range-picker.js',
-    libraryTarget: 'umd',
-    library: 'ReactTimeRangePicker'
+    path: path.resolve(__dirname, 'build'),
+    filename: 'index.js',
+    libraryTarget: 'commonjs2' // THIS IS THE MOST IMPORTANT LINE! :mindblow: I wasted more than 2 days until realize this was the line most important in all this guide.
   },
-
-  externals: {
-   'react': 'var React',
-   'react/addons': 'var React'
-  },
-
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.scss$/,
-        // Query parameters are passed to node-sass
-        loader: 'style!css!sass?outputStyle=expanded&' +
-          'includePaths[]=' + (path.resolve(__dirname, './bower_components')) + '&' +
-          'includePaths[]=' + (path.resolve(__dirname, './node_modules'))
-      },
-      {
-        test: /(\.js)|(\.jsx)$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: {
-          optional: ['runtime'],
-          stage: 0
+        test: /\.js$/,
+        include: path.resolve(__dirname, 'src'),
+        exclude: /(node_modules|bower_components|build)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env'],
+            plugins: ['transform-class-properties']
+          }
         }
       }
     ]
+  },
+  externals: {
+    'react': 'commonjs react' // this line is just to use the React dependency of our parent-testing-project instead of using our own React.
   }
 };

@@ -1,24 +1,31 @@
 import React from 'react';
-import './react-time-range-picker.scss';
 
-export default React.createClass({
+export default class TimeRangePicker extends React.Component {
+
+  state = {
+    start_line: null,
+    end_line: null,
+    start_time: undefined,
+    end_time: undefined,
+  }
 
   // Set up initial state
-  getInitialState: function() {
+  getInitialState() {
     return {
       start_line: null,
       end_line: null,
       start_time: undefined,
       end_time: undefined,
     };
-  },
-  get_canvas_coordinates: function(evt){
+  }
+
+  get_canvas_coordinates = (evt) => {
     var x = evt.clientX - this.state.context.canvas.getBoundingClientRect().left,
         y = evt.clientY - this.state.context.canvas.getBoundingClientRect().top;
     return {x: x, y: y};
-  },
+  }
 
-  draw_grid: function(){
+  draw_grid = () => {
     var y_step = this.state.context.canvas.height / 24.0;
     var step = y_step;
     this.state.context.beginPath();
@@ -44,9 +51,9 @@ export default React.createClass({
       this.state.context.fillText(`${(i%12) == 0 ? 12 : (i%12)} ${(i/12) > 1 ? "pm" : "am"}`,10, step);
       step = step + y_step
     }
-  },
+  }
 
-  to_24_hour_format: function(raw_time){
+  to_24_hour_format = (raw_time) => {
     raw_time = parseInt(Math.round((Math.round(raw_time*2)/2)/50)*50);
     var end_of_raw_time = `${parseInt((parseInt(raw_time.toString().slice(-2))/100)*60)}`;
 
@@ -62,30 +69,28 @@ export default React.createClass({
       raw_time = "23:59"
     }
     return raw_time
-  },
+  }
 
-  generate_time_bounds: function(){
+  generate_time_bounds = () => {
     var start = this.to_24_hour_format(((this.state.start_line / this.state.context.canvas.height) * 100.0) * 24);
     var end = this.to_24_hour_format(((this.state.end_line / this.state.context.canvas.height) * 100.0) * 24);
 
     this.setState({
       start_time: start,
       end_time: end,
-    }, () => {
-      this.props.dispatch(setTimePeriodSelectorBounds({start: this.state.start_time, end: this.state.end_time}))
     })
-  },
+  }
 
-  clear_canvas: function(){
+  clear_canvas = () => {
     this.state.canvas.width = this.state.canvas.offsetWidth;
     this.state.canvas.height = this.state.canvas.offsetHeight;
     this.state.context.fillStyle='#FFFFFF';
     this.state.context.clearRect(0, 0, this.state.canvas.width, this.state.canvas.height);
     this.state.context.fillRect(0, 0, this.state.context.canvas.clientWidth, this.state.context.canvas.clientHeight);
     this.draw_grid()
-  },
+  }
 
-  draw_horizontal_line: function(y_axis){
+  draw_horizontal_line = (y_axis) => {
     this.state.context.beginPath();
     this.state.context.moveTo(0, y_axis);
     this.state.context.lineTo(this.state.context.canvas.width, y_axis);
@@ -96,16 +101,16 @@ export default React.createClass({
 
     this.state.context.fillStyle='rgba(255, 153, 153, 0.2)';
     this.state.context.fillRect(0, this.state.start_line, this.state.canvas.width, this.state.end_line-this.state.start_line);
-  },
+  }
 
-  draw_start_and_end_lines: function(){
+  draw_start_and_end_lines = () => {
     this.clear_canvas()
     this.draw_horizontal_line(this.state.start_line)
     this.draw_horizontal_line(this.state.end_line)
     this.generate_time_bounds()
-  },
+  }
 
-  move_closest_line: function(drag_ordinates){
+  move_closest_line = (drag_ordinates) => {
     if(drag_ordinates < 0){
       drag_ordinates = 0;
     }
@@ -154,40 +159,40 @@ export default React.createClass({
         }, this.draw_start_and_end_lines)
       }
     }
-  },
+  }
 
-  drag_start: function(evt){
+  drag_start = (evt) => {
     this.setState({dragging: true})
     var drag_ordinates = this.get_canvas_coordinates(evt);
     this.move_closest_line(drag_ordinates)
-  },
+  }
 
-  drag: function(evt){
+  drag = (evt) => {
     if(this.state.dragging){
       var drag_ordinates = this.get_canvas_coordinates(evt);
       this.move_closest_line(drag_ordinates);
     }
-  },
+  }
 
-  drag_stop: function(evt){
+  drag_stop = (evt) => {
     // here we want to snap the start and end lines to their closest bounds
     this.setState({dragging: false})
-  },
+  }
 
-  setup_canvas: function(){
+  setup_canvas = () => {
     this.clear_canvas();
     this.state.context.canvas.addEventListener('mousedown', this.drag_start, false);
     this.state.context.canvas.addEventListener('mousemove', this.drag, false);
     this.state.context.canvas.addEventListener('mouseup', this.drag_stop, false);
-  },
+  }
 
-  handleClick: function(event){
+  handleClick = (event) => {
     var x = event.clientX;
     var y = event.clientY;
     console.log("x: " + x + " y: " + y);
-  },
+  }
 
-  componentDidMount: function(){
+  componentDidMount = () => {
     this.setState({
       canvas: document.getElementById('TimePeriodSelectorCanvas'),
     }, () => {
@@ -199,20 +204,21 @@ export default React.createClass({
     })
 
     window.addEventListener('mouseup', this.drag_stop)
-  },
+  }
 
-  render: function(){
+  render(){
     if(this.state === undefined){return(<div></div>)}
     return(
-      <div width="500px" height="500px" style={this.props.style}>
+      <div width="500px" height="500px" style={{maxWidth: "100%", maxHeight: "100%"...this.props.style}}>
         <canvas id="TimePeriodSelectorCanvas" style={{
           border: "1px solid #000000",
           height: "100%",
           width: "100%",
         }}>
         </canvas>
+
         <h3 style={{userSelect: "none"}}>{this.state.start_time !== undefined && this.state.end_time !== undefined ? `From: ${this.state.start_time} To: ${this.state.end_time}` : null}</h3>
       </div>
     )
   }
-});
+}
