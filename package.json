@@ -1,6 +1,6 @@
 {
   "name": "react-time-range-picker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A simple HTML5 canvas time range picker in React.",
   "main": "index.js",
   "scripts": {
