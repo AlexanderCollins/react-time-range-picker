@@ -1,1 +1,1 @@
-module.exports = require('./lib/react-component-npm.jsx');
+module.exports = require('./lib');
