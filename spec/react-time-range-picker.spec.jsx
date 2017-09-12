@@ -1,5 +1,5 @@
 import React from 'react/addons';
-import ReactTimeRangePicker from '../lib/react-time-range-picker.jsx';
+import ReactTimeRangePicker from '../lib/react-time-range-picker.js';
 
 describe('ReactTimeRangePicker', function() {
   var component;
