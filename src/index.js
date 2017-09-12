@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default class TimeRangePicker extends React.Component {
+class TimeRangePicker extends React.Component {
 
   get_canvas_coordinates = function(evt){
     var x = evt.clientX - this.state.context.canvas.getBoundingClientRect().left,
@@ -211,3 +211,5 @@ export default class TimeRangePicker extends React.Component {
     )
   }
 }
+
+module.exports = {TimeRangePicker: TimeRangePicker};
