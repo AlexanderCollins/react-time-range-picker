@@ -1,6 +1,6 @@
 {
   "name": "react-time-range-picker",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "A React time of day selector.",
   "main": "build/index.js",
   "peerDependencies": {
