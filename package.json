@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/AlexanderCollins/react-time-range-picker/issues"
   },
-  "homepage": "https://github.com/AlexanderCollins/react-time-range-picker#readme"
+  "homepage": "https://github.com/AlexanderCollins/react-time-range-picker#readme",
+  "dependencies": {}
 }

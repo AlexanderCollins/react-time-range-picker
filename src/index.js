@@ -3,13 +3,13 @@ import React from 'react';
 
 export default class TimeRangePicker extends React.Component {
 
-  get_canvas_coordinates = (evt) => {
+  get_canvas_coordinates = function(evt){
     var x = evt.clientX - this.state.context.canvas.getBoundingClientRect().left,
         y = evt.clientY - this.state.context.canvas.getBoundingClientRect().top;
     return {x: x, y: y};
   }
 
-  draw_grid = () => {
+  draw_grid = function(){
     var y_step = this.state.context.canvas.height / 24.0;
     var step = y_step;
     this.state.context.beginPath();
@@ -37,7 +37,7 @@ export default class TimeRangePicker extends React.Component {
     }
   }
 
-  to_24_hour_format = (raw_time) => {
+  to_24_hour_format = function(raw_time){
     raw_time = parseInt(Math.round((Math.round(raw_time*2)/2)/50)*50);
     var end_of_raw_time = `${parseInt((parseInt(raw_time.toString().slice(-2))/100)*60)}`;
 
@@ -55,7 +55,7 @@ export default class TimeRangePicker extends React.Component {
     return raw_time
   }
 
-  generate_time_bounds = () => {
+  generate_time_bounds = function(){
     var start = this.to_24_hour_format(((this.state.start_line / this.state.context.canvas.height) * 100.0) * 24);
     var end = this.to_24_hour_format(((this.state.end_line / this.state.context.canvas.height) * 100.0) * 24);
 
@@ -67,7 +67,7 @@ export default class TimeRangePicker extends React.Component {
     })
   }
 
-  clear_canvas = () => {
+  clear_canvas = function(){
     this.state.canvas.width = this.state.canvas.offsetWidth;
     this.state.canvas.height = this.state.canvas.offsetHeight;
     this.state.context.fillStyle='#FFFFFF';
@@ -76,7 +76,7 @@ export default class TimeRangePicker extends React.Component {
     this.draw_grid()
   }
 
-  draw_horizontal_line = (y_axis)=> {
+  draw_horizontal_line = function(y_axis){
     this.state.context.beginPath();
     this.state.context.moveTo(0, y_axis);
     this.state.context.lineTo(this.state.context.canvas.width, y_axis);
@@ -89,14 +89,14 @@ export default class TimeRangePicker extends React.Component {
     this.state.context.fillRect(0, this.state.start_line, this.state.canvas.width, this.state.end_line-this.state.start_line);
   }
 
-  draw_start_and_end_lines = () => {
+  draw_start_and_end_lines = function(){
     this.clear_canvas()
     this.draw_horizontal_line(this.state.start_line)
     this.draw_horizontal_line(this.state.end_line)
     this.generate_time_bounds()
   }
 
-  move_closest_line = (drag_ordinates) => {
+  move_closest_line = function(drag_ordinates){
     if(drag_ordinates < 0){
       drag_ordinates = 0;
     }
@@ -146,32 +146,32 @@ export default class TimeRangePicker extends React.Component {
       }
     }
   }
-  drag_start = (evt) => {
+  drag_start = function(evt){
     this.setState({dragging: true})
     var drag_ordinates = this.get_canvas_coordinates(evt);
     this.move_closest_line(drag_ordinates)
   }
 
-  drag = (evt) => {
+  drag = function(evt){
     if(this.state.dragging){
       var drag_ordinates = this.get_canvas_coordinates(evt);
       this.move_closest_line(drag_ordinates);
     }
   }
 
-  drag_stop = (evt) => {
+  drag_stop = function(evt){
     // here we want to snap the start and end lines to their closest bounds
     this.setState({dragging: false})
   }
 
-  setup_canvas = () => {
+  setup_canvas = function(){
     this.clear_canvas();
     this.state.context.canvas.addEventListener('mousedown', this.drag_start, false);
     this.state.context.canvas.addEventListener('mousemove', this.drag, false);
     this.state.context.canvas.addEventListener('mouseup', this.drag_stop, false);
   }
 
-  handleClick = (event) => {
+  handleClick = function(event){
     var x = event.clientX;
     var y = event.clientY;
     console.log("x: " + x + " y: " + y);
