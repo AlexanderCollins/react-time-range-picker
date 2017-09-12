@@ -1,7 +1,14 @@
 import React from 'react';
 
 
-export default class TimeRangePicker extends React.PureComponent {
+export default class TimeRangePicker extends React.Component {
+
+  state = {
+    start_line: null,
+    end_line: null,
+    start_time: undefined,
+    end_time: undefined
+  }
 
   get_canvas_coordinates = (evt) => {
     var x = evt.clientX - this.state.context.canvas.getBoundingClientRect().left,
@@ -181,10 +188,6 @@ export default class TimeRangePicker extends React.PureComponent {
 
   componentDidMount(){
     this.setState({
-      start_line: null,
-      end_line: null,
-      start_time: undefined,
-      end_time: undefined,
       canvas: document.getElementById('TimePeriodSelectorCanvas'),
     }, () => {
       this.setState({
