@@ -1,1 +1,1 @@
-export { default } from './lib/react-time-range-picker.jsx';
+export default include('./lib/react-time-range-picker.jsx');
