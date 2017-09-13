@@ -48,3 +48,5 @@ export default class App extends Component {
   **markerfont** - defaults to css string "15px Arial".
 
   **timeupdate** - function which is called on mouseup with start_time and end_time respectively in 12 hour time format.
+  
+  **snapto** - defaulto to 50, that is, 50% of the hour. set to 1 for highest granuality, i.e snapto={1}.
