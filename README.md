@@ -1,11 +1,12 @@
 # react-time-range-picker
 A simple HTML5 canvas time range picker in React.
 
-### Demo
-![alt text](https://media.giphy.com/media/3o7aCPGsCo3BMdVcNG/giphy.gif)
-
 ### Installation
 `npm i react-time-range-picker`
+
+### Demo
+![alt text](https://media.giphy.com/media/l1J9FsHHyKmzRiLL2/giphy.gif)
+![alt text](https://media.giphy.com/media/3ov9k5cHCj1Vh4YejK/giphy.gif)
 
 ### Usage
 `import TimeRangePicker from 'react-time-range-picker';`
