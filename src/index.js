@@ -1,22 +1,12 @@
 import React from 'react';
 
-export default class TimeRangePicker extends React.Component {
+class TimeRangePicker extends React.Component {
 
   state = {
     start_line: null,
     end_line: null,
     start_time: undefined,
     end_time: undefined,
-  }
-
-  // Set up initial state
-  getInitialState() {
-    return {
-      start_line: null,
-      end_line: null,
-      start_time: undefined,
-      end_time: undefined,
-    };
   }
 
   get_canvas_coordinates = (evt) => {
@@ -27,27 +17,33 @@ export default class TimeRangePicker extends React.Component {
 
   draw_grid = () => {
     var y_step = this.state.context.canvas.height / 24.0;
-    var step = y_step;
-    this.state.context.beginPath();
-    this.state.context.lineWidth = 0.1;
 
-    for(var i = 0; i < 24; i++){
-      if(i%2 == 0){
-        this.state.context.strokeStyle = 'rgba(0,0,0,0.2)';
-      } else {
-        this.state.context.strokeStyle = 'rgba(0,0,0,1.0)';
+    if(this.props.hourlines){
+      var step = y_step;
+      this.state.context.beginPath();
+      this.state.context.lineWidth = 0.1;
+
+      for(var i = 0; i < 24; i++){
+        if(i%2 == 0){
+          this.state.context.strokeStyle = 'rgba(0,0,0,0.2)';
+        } else {
+          this.state.context.strokeStyle = 'rgba(0,0,0,1.0)';
+        }
+        this.state.context.moveTo(0, step);
+        this.state.context.lineTo(this.state.context.canvas.width, step);
+        step = step + y_step
       }
-      this.state.context.moveTo(0, step);
-      this.state.context.lineTo(this.state.context.canvas.width, step);
-      step = step + y_step
+      this.state.context.stroke();
     }
-    this.state.context.stroke();
+
+    if(!this.props.hourmarkers){return;}
 
     var step = y_step;
-    this.state.context.fillStyle = 'blue';
-    this.state.context.font="15px Arial";
+    this.state.context.fillStyle = this.props.markercolor;
+    this.state.context.font=this.props.markerfont;
     this.state.context.textAlign="start";
     for(var i = 1; i < 25; ++i){
+
       this.state.context.fillText(`${(i%12) == 0 ? 12 : (i%12)} ${(i/12) > 1 ? "pm" : "am"}`,10, step);
       step = step + y_step
     }
@@ -95,11 +91,12 @@ export default class TimeRangePicker extends React.Component {
     this.state.context.moveTo(0, y_axis);
     this.state.context.lineTo(this.state.context.canvas.width, y_axis);
     this.state.context.lineWidth = 1;
+
     // set line color
     this.state.context.strokeStyle = '#000000';
     this.state.context.stroke();
 
-    this.state.context.fillStyle='rgba(255, 153, 153, 0.2)';
+    this.state.context.fillStyle=this.props.rangecolor;
     this.state.context.fillRect(0, this.state.start_line, this.state.canvas.width, this.state.end_line-this.state.start_line);
   }
 
@@ -134,13 +131,11 @@ export default class TimeRangePicker extends React.Component {
     }
     else if(this.state.start_line !== null && this.state.end_line === null) {
       if(drag_ordinates.y < this.state.start_line){
-        console.log("moving start_line")
         this.setState({
           end_line: this.state.start_line,
           start_line: drag_ordinates.y
         }, this.draw_start_and_end_lines)
       } else if (drag_ordinates.y > this.state.start_line){
-        console.log("moving end_line")
         this.setState({
           start_line: this.state.start_line,
           end_line: drag_ordinates.y
@@ -148,12 +143,10 @@ export default class TimeRangePicker extends React.Component {
       }
     } else {
       if(distance_to_start_line < distance_to_end_line){
-        console.log("moving start_line")
         this.setState({
           start_line: drag_ordinates.y
         }, this.draw_start_and_end_lines)
       } else if (distance_to_end_line <= distance_to_start_line) {
-        console.log("moving end_line")
         this.setState({
           end_line: drag_ordinates.y
         }, this.draw_start_and_end_lines)
@@ -176,7 +169,7 @@ export default class TimeRangePicker extends React.Component {
 
   drag_stop = (evt) => {
     // here we want to snap the start and end lines to their closest bounds
-    this.setState({dragging: false})
+    this.setState({dragging: false}, () => this.props.timeupdate(this.state.start_time, this.state.end_time))
   }
 
   setup_canvas = () => {
@@ -189,7 +182,6 @@ export default class TimeRangePicker extends React.Component {
   handleClick = (event) => {
     var x = event.clientX;
     var y = event.clientY;
-    console.log("x: " + x + " y: " + y);
   }
 
   componentDidMount = () => {
@@ -202,14 +194,11 @@ export default class TimeRangePicker extends React.Component {
         this.setup_canvas();
       })
     })
-
-    window.addEventListener('mouseup', this.drag_stop)
   }
 
   render(){
-    if(this.state === undefined){return(<div></div>)}
     return(
-      <div width="500px" height="500px" style={{maxWidth: "100%", maxHeight: "100%"...this.props.style}}>
+      <div style={{...this.props.style}}>
         <canvas id="TimePeriodSelectorCanvas" style={{
           border: "1px solid #000000",
           height: "100%",
@@ -221,4 +210,20 @@ export default class TimeRangePicker extends React.Component {
       </div>
     )
   }
+}
+
+export default TimeRangePicker;
+
+
+TimeRangePicker.defaultProps = {
+  style: {
+    width: "500px",
+    height: "500px",
+  },
+  rangecolor: "rgba(255, 153, 153, 0.2)",
+  hourlines: false,
+  hourmarkers: false,
+  markercolor: "blue",
+  markerfont: "15px Arial",
+  timeupdate: (a, b) => {},
 }

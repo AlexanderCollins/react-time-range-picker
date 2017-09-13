@@ -84,6 +84,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(0);
@@ -117,35 +119,41 @@ var TimeRangePicker = function (_React$Component) {
       end_line: null,
       start_time: undefined,
       end_time: undefined
-
-      // Set up initial state
     }, _this.get_canvas_coordinates = function (evt) {
       var x = evt.clientX - _this.state.context.canvas.getBoundingClientRect().left,
           y = evt.clientY - _this.state.context.canvas.getBoundingClientRect().top;
       return { x: x, y: y };
     }, _this.draw_grid = function () {
       var y_step = _this.state.context.canvas.height / 24.0;
-      var step = y_step;
-      _this.state.context.beginPath();
-      _this.state.context.lineWidth = 0.1;
 
-      for (var i = 0; i < 24; i++) {
-        if (i % 2 == 0) {
-          _this.state.context.strokeStyle = 'rgba(0,0,0,0.2)';
-        } else {
-          _this.state.context.strokeStyle = 'rgba(0,0,0,1.0)';
+      if (_this.props.hourlines) {
+        var step = y_step;
+        _this.state.context.beginPath();
+        _this.state.context.lineWidth = 0.1;
+
+        for (var i = 0; i < 24; i++) {
+          if (i % 2 == 0) {
+            _this.state.context.strokeStyle = 'rgba(0,0,0,0.2)';
+          } else {
+            _this.state.context.strokeStyle = 'rgba(0,0,0,1.0)';
+          }
+          _this.state.context.moveTo(0, step);
+          _this.state.context.lineTo(_this.state.context.canvas.width, step);
+          step = step + y_step;
         }
-        _this.state.context.moveTo(0, step);
-        _this.state.context.lineTo(_this.state.context.canvas.width, step);
-        step = step + y_step;
+        _this.state.context.stroke();
       }
-      _this.state.context.stroke();
+
+      if (!_this.props.hourmarkers) {
+        return;
+      }
 
       var step = y_step;
-      _this.state.context.fillStyle = 'blue';
-      _this.state.context.font = "15px Arial";
+      _this.state.context.fillStyle = _this.props.markercolor;
+      _this.state.context.font = _this.props.markerfont;
       _this.state.context.textAlign = "start";
       for (var i = 1; i < 25; ++i) {
+
         _this.state.context.fillText((i % 12 == 0 ? 12 : i % 12) + ' ' + (i / 12 > 1 ? "pm" : "am"), 10, step);
         step = step + y_step;
       }
@@ -185,11 +193,12 @@ var TimeRangePicker = function (_React$Component) {
       _this.state.context.moveTo(0, y_axis);
       _this.state.context.lineTo(_this.state.context.canvas.width, y_axis);
       _this.state.context.lineWidth = 1;
+
       // set line color
       _this.state.context.strokeStyle = '#000000';
       _this.state.context.stroke();
 
-      _this.state.context.fillStyle = 'rgba(255, 153, 153, 0.2)';
+      _this.state.context.fillStyle = _this.props.rangecolor;
       _this.state.context.fillRect(0, _this.state.start_line, _this.state.canvas.width, _this.state.end_line - _this.state.start_line);
     }, _this.draw_start_and_end_lines = function () {
       _this.clear_canvas();
@@ -219,13 +228,11 @@ var TimeRangePicker = function (_React$Component) {
         }, _this.draw_start_and_end_lines);
       } else if (_this.state.start_line !== null && _this.state.end_line === null) {
         if (drag_ordinates.y < _this.state.start_line) {
-          console.log("moving start_line");
           _this.setState({
             end_line: _this.state.start_line,
             start_line: drag_ordinates.y
           }, _this.draw_start_and_end_lines);
         } else if (drag_ordinates.y > _this.state.start_line) {
-          console.log("moving end_line");
           _this.setState({
             start_line: _this.state.start_line,
             end_line: drag_ordinates.y
@@ -233,12 +240,10 @@ var TimeRangePicker = function (_React$Component) {
         }
       } else {
         if (distance_to_start_line < distance_to_end_line) {
-          console.log("moving start_line");
           _this.setState({
             start_line: drag_ordinates.y
           }, _this.draw_start_and_end_lines);
         } else if (distance_to_end_line <= distance_to_start_line) {
-          console.log("moving end_line");
           _this.setState({
             end_line: drag_ordinates.y
           }, _this.draw_start_and_end_lines);
@@ -255,7 +260,9 @@ var TimeRangePicker = function (_React$Component) {
       }
     }, _this.drag_stop = function (evt) {
       // here we want to snap the start and end lines to their closest bounds
-      _this.setState({ dragging: false });
+      _this.setState({ dragging: false }, function () {
+        return _this.props.timeupdate(_this.state.start_time, _this.state.end_time);
+      });
     }, _this.setup_canvas = function () {
       _this.clear_canvas();
       _this.state.context.canvas.addEventListener('mousedown', _this.drag_start, false);
@@ -264,7 +271,6 @@ var TimeRangePicker = function (_React$Component) {
     }, _this.handleClick = function (event) {
       var x = event.clientX;
       var y = event.clientY;
-      console.log("x: " + x + " y: " + y);
     }, _this.componentDidMount = function () {
       _this.setState({
         canvas: document.getElementById('TimePeriodSelectorCanvas')
@@ -275,30 +281,15 @@ var TimeRangePicker = function (_React$Component) {
           _this.setup_canvas();
         });
       });
-
-      window.addEventListener('mouseup', _this.drag_stop);
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(TimeRangePicker, [{
-    key: 'getInitialState',
-    value: function getInitialState() {
-      return {
-        start_line: null,
-        end_line: null,
-        start_time: undefined,
-        end_time: undefined
-      };
-    }
-  }, {
     key: 'render',
     value: function render() {
-      if (this.state === undefined) {
-        return _react2.default.createElement('div', null);
-      }
       return _react2.default.createElement(
         'div',
-        { width: '500px', height: '500px', style: this.props.style },
+        { style: _extends({}, this.props.style) },
         _react2.default.createElement('canvas', { id: 'TimePeriodSelectorCanvas', style: {
             border: "1px solid #000000",
             height: "100%",
@@ -317,6 +308,20 @@ var TimeRangePicker = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = TimeRangePicker;
+
+
+TimeRangePicker.defaultProps = {
+  style: {
+    width: "500px",
+    height: "500px"
+  },
+  rangecolor: "rgba(255, 153, 153, 0.2)",
+  hourlines: false,
+  hourmarkers: false,
+  markercolor: "blue",
+  markerfont: "15px Arial",
+  timeupdate: function timeupdate(a, b) {}
+};
 
 /***/ })
 /******/ ]);
