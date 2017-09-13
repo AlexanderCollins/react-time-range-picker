@@ -38,15 +38,13 @@ export default class App extends Component {
 ### Props
 
   **hourmarkers** - enables vertically numbered list of 12hour format markers.
-  
-  **hourlines** - enables horizontal hour lines.
-  
-  **rangecolor** - css color string to set range color.
-  
-  **markercolor** - css color string to set vertical markers
-  
-  **markerfont** - defaults to css string "15px Arial".
-  
-  **timeupdate** - function which is called on mouseup with start_time and end_time respectively in 12 hour time format.
-  
 
+  **hourlines** - enables horizontal hour lines.
+
+  **rangecolor** - css color string to set range color.
+
+  **markercolor** - css color string to set vertical markers
+
+  **markerfont** - defaults to css string "15px Arial".
+
+  **timeupdate** - function which is called on mouseup with start_time and end_time respectively in 12 hour time format.

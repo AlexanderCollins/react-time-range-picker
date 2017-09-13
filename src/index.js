@@ -50,7 +50,7 @@ class TimeRangePicker extends React.Component {
   }
 
   to_24_hour_format = (raw_time) => {
-    raw_time = parseInt(Math.round((Math.round(raw_time*2)/2)/50)*50);
+    raw_time = parseInt(Math.round((Math.round(raw_time*2)/2)/this.props.snapto)*this.props.snapto);
     var end_of_raw_time = `${parseInt((parseInt(raw_time.toString().slice(-2))/100)*60)}`;
 
     if(end_of_raw_time.length == 1){
@@ -225,5 +225,6 @@ TimeRangePicker.defaultProps = {
   hourmarkers: false,
   markercolor: "blue",
   markerfont: "15px Arial",
+  snapto: 50,
   timeupdate: (a, b) => {},
 }
