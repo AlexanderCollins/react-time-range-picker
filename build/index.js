@@ -158,7 +158,7 @@ var TimeRangePicker = function (_React$Component) {
         step = step + y_step;
       }
     }, _this.to_24_hour_format = function (raw_time) {
-      raw_time = parseInt(Math.round(Math.round(raw_time * 2) / 2 / 50) * 50);
+      raw_time = parseInt(Math.round(Math.round(raw_time * 2) / 2 / _this.props.snapto) * _this.props.snapto);
       var end_of_raw_time = '' + parseInt(parseInt(raw_time.toString().slice(-2)) / 100 * 60);
 
       if (end_of_raw_time.length == 1) {
@@ -320,6 +320,7 @@ TimeRangePicker.defaultProps = {
   hourmarkers: false,
   markercolor: "blue",
   markerfont: "15px Arial",
+  snapto: 50,
   timeupdate: function timeupdate(a, b) {}
 };
 
