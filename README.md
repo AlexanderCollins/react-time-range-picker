@@ -2,7 +2,7 @@
 A simple HTML5 canvas time range picker in React.
 
 ### Demo
-![alt text](https://media.giphy.com/media/3ohhwrF8jULLdjhamY/giphy.gif)
+![alt text](https://media.giphy.com/media/3o7aCPGsCo3BMdVcNG/giphy.gif)
 
 ### Installation
 `npm i react-time-range-picker`
